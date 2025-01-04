@@ -210,6 +210,27 @@ MeshSubset SimplicialComplexOperators::closure(const MeshSubset& subset) const {
     closure.addVertices(subset.vertices);
     closure.addEdges(subset.edges);
     closure.addFaces(subset.faces);
+
+    Vector<size_t> closure_edges_vec, 
+                   closure_vertices_vec, 
+                   subset_vertex_vec = buildVertexVector(subset), 
+                   subset_edge_vec = buildEdgeVector(subset),
+                   subset_face_vec = buildFaceVector(subset);
+
+    closure_edges_vec = A1.transpose() * subset_face_vec + subset_edge_vec;
+    for (size_t i = 0; i < closure_edges_vec.size(); i++) {
+        if (closure_edges_vec[i] != 0) {
+            closure_edges_vec[i] = 1;
+            closure.addEdge(i);
+        }
+    }
+
+    closure_vertices_vec = A0.transpose() * closure_edges_vec + subset_vertex_vec;
+    for (size_t i = 0; i < closure_vertices_vec.size(); i++) {
+        if (closure_vertices_vec[i] != 0) {
+            closure.addVertex(i);
+        }
+    }
     return closure;
 }
 
