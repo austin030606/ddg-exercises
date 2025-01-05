@@ -309,5 +309,41 @@ int SimplicialComplexOperators::isPureComplex(const MeshSubset& subset) const {
 MeshSubset SimplicialComplexOperators::boundary(const MeshSubset& subset) const {
 
     // TODO
-    return subset; // placeholder
+    if (isPureComplex(subset) == -1) {
+        std::cout << "selected subset is not pure\n";
+        return subset;
+    }
+    MeshSubset boundaryFaces; // the set of all simplices that are proper faces of exactly one simplex of subset
+    Vector<size_t> nface_per_vertex_vec,
+                   nedge_per_vertex_vec,
+                   nsimplex_per_vertex_vec,
+                   nface_per_edge_vec,
+                   subset_vertex_vec = buildVertexVector(subset), 
+                   subset_edge_vec = buildEdgeVector(subset),
+                   subset_face_vec = buildFaceVector(subset);
+
+    nedge_per_vertex_vec = A0.transpose() * subset_edge_vec;
+    
+    SparseMatrix<size_t> A1A0 = A1 * A0;
+    for (size_t i = 0; i < A1A0.nonZeros(); i++) {
+        A1A0.valuePtr()[i] = 1;
+    }
+
+    nface_per_vertex_vec = A1A0.transpose() * subset_face_vec;
+    nsimplex_per_vertex_vec = nedge_per_vertex_vec + nface_per_vertex_vec;
+    
+    nface_per_edge_vec = A1.transpose() * subset_face_vec;
+
+    for (size_t i = 0; i < nsimplex_per_vertex_vec.size(); i++) {
+        if (nsimplex_per_vertex_vec[i] == 1) {
+            boundaryFaces.addVertex(i);
+        }
+    }
+    for (size_t i = 0; i < nface_per_edge_vec.size(); i++) {
+        if (nface_per_edge_vec[i] == 1) {
+            boundaryFaces.addEdge(i);
+        }
+    }
+
+    return closure(boundaryFaces);
 }
