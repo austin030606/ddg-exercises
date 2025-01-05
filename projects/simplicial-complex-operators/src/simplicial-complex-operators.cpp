@@ -169,10 +169,10 @@ Vector<size_t> SimplicialComplexOperators::buildFaceVector(const MeshSubset& sub
 MeshSubset SimplicialComplexOperators::star(const MeshSubset& subset) const {
 
     // TODO
-    MeshSubset star;
-    star.addVertices(subset.vertices);
-    star.addEdges(subset.edges);
-    star.addFaces(subset.faces);
+    MeshSubset star_subset;
+    star_subset.addVertices(subset.vertices);
+    star_subset.addEdges(subset.edges);
+    star_subset.addFaces(subset.faces);
     Vector<size_t> star_edges_vec, 
                    star_faces_vec, 
                    subset_vertex_vec = buildVertexVector(subset), 
@@ -183,17 +183,17 @@ MeshSubset SimplicialComplexOperators::star(const MeshSubset& subset) const {
     for (size_t i = 0; i < star_edges_vec.size(); i++) {
         if (star_edges_vec[i] != 0) {
             star_edges_vec[i] = 1;
-            star.addEdge(i);
+            star_subset.addEdge(i);
         }
     }
 
     star_faces_vec = A1 * star_edges_vec + subset_face_vec;
     for (size_t i = 0; i < star_faces_vec.size(); i++) {
         if (star_faces_vec[i] != 0) {
-            star.addFace(i);
+            star_subset.addFace(i);
         }
     }
-    return star;
+    return star_subset;
 }
 
 
@@ -206,10 +206,10 @@ MeshSubset SimplicialComplexOperators::star(const MeshSubset& subset) const {
 MeshSubset SimplicialComplexOperators::closure(const MeshSubset& subset) const {
 
     // TODO
-    MeshSubset closure;
-    closure.addVertices(subset.vertices);
-    closure.addEdges(subset.edges);
-    closure.addFaces(subset.faces);
+    MeshSubset closure_subset;
+    closure_subset.addVertices(subset.vertices);
+    closure_subset.addEdges(subset.edges);
+    closure_subset.addFaces(subset.faces);
 
     Vector<size_t> closure_edges_vec, 
                    closure_vertices_vec, 
@@ -221,17 +221,17 @@ MeshSubset SimplicialComplexOperators::closure(const MeshSubset& subset) const {
     for (size_t i = 0; i < closure_edges_vec.size(); i++) {
         if (closure_edges_vec[i] != 0) {
             closure_edges_vec[i] = 1;
-            closure.addEdge(i);
+            closure_subset.addEdge(i);
         }
     }
 
     closure_vertices_vec = A0.transpose() * closure_edges_vec + subset_vertex_vec;
     for (size_t i = 0; i < closure_vertices_vec.size(); i++) {
         if (closure_vertices_vec[i] != 0) {
-            closure.addVertex(i);
+            closure_subset.addVertex(i);
         }
     }
-    return closure;
+    return closure_subset;
 }
 
 /*
@@ -259,7 +259,7 @@ MeshSubset SimplicialComplexOperators::link(const MeshSubset& subset) const {
 bool SimplicialComplexOperators::isComplex(const MeshSubset& subset) const {
 
     // TODO
-    return false; // placeholder
+    return subset.equals(closure(subset)); // placeholder
 }
 
 /*
@@ -272,6 +272,31 @@ bool SimplicialComplexOperators::isComplex(const MeshSubset& subset) const {
 int SimplicialComplexOperators::isPureComplex(const MeshSubset& subset) const {
 
     // TODO
+    if (!isComplex(subset))
+        return -1;
+    
+    if (!subset.faces.empty()) {
+        MeshSubset faces_subset, closure_subset;
+        faces_subset.addFaces(subset.faces);
+        closure_subset = closure(faces_subset);
+        if (closure_subset.equals(subset)) {
+            return 2;
+        }
+    } else if (!subset.edges.empty()) {
+        MeshSubset edges_subset, closure_subset;
+        edges_subset.addEdges(subset.edges);
+        closure_subset = closure(edges_subset);
+        if (closure_subset.equals(subset)) {
+            return 1;
+        }
+    } else if (!subset.vertices.empty()) {
+        MeshSubset vertices_subset, closure_subset;
+        vertices_subset.addVertices(subset.vertices);
+        closure_subset = closure(vertices_subset);
+        if (closure_subset.equals(subset)) {
+            return 0;
+        }
+    }
     return -1; // placeholder
 }
 
