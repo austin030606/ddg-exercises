@@ -136,7 +136,8 @@ SparseMatrix<double> VertexPositionGeometry::buildExteriorDerivative1Form() cons
         for (Halfedge he: f.adjacentHalfedges()) {
             Edge e = he.edge();
             size_t e_index = e.getIndex();
-            tripletList.push_back(Eigen::Triplet<double>(f_index, e_index, ((he.tailVertex().getIndex() == e.firstVertex().getIndex()) ? 1.0 : -1.0)));
+            // tripletList.push_back(Eigen::Triplet<double>(f_index, e_index, ((he.tailVertex().getIndex() == e.firstVertex().getIndex()) ? 1.0 : -1.0)));
+            tripletList.push_back(Eigen::Triplet<double>(f_index, e_index, (he.orientation() ? 1.0 : -1.0)));
         }
         
     }
