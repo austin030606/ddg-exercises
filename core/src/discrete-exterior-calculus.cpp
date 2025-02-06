@@ -64,7 +64,17 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar0Form() const {
 SparseMatrix<double> VertexPositionGeometry::buildHodgeStar1Form() const {
 
     // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> tripletList;
+    for (Edge e: mesh.edges()) {
+        size_t index = e.getIndex();
+        Halfedge he = e.halfedge();
+        tripletList.push_back(Eigen::Triplet<double>(index, index, (cotan(he) + cotan(he.twin())) / 2));
+    }
+
+    SparseMatrix<double> hstar_1(mesh.nEdges(), mesh.nEdges());
+    hstar_1.setFromTriplets(tripletList.begin(), tripletList.end());
+    hstar_1.makeCompressed();
+    return hstar_1;
 }
 
 /*
@@ -76,7 +86,16 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar1Form() const {
 SparseMatrix<double> VertexPositionGeometry::buildHodgeStar2Form() const {
 
     // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> tripletList;
+    for (Face f: mesh.faces()) {
+        size_t index = f.getIndex();
+        tripletList.push_back(Eigen::Triplet<double>(index, index, 1 / faceArea(f)));
+    }
+
+    SparseMatrix<double> hstar_2(mesh.nFaces(), mesh.nFaces());
+    hstar_2.setFromTriplets(tripletList.begin(), tripletList.end());
+    hstar_2.makeCompressed();
+    return hstar_2;
 }
 
 /*
