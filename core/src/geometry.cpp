@@ -100,8 +100,11 @@ double VertexPositionGeometry::cotan(Halfedge he) const {
 double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
 
     // TODO
-    
-    return 0; // placeholder
+    double res = 0.0;
+    for (Face f: v.adjacentFaces()) {
+        res += faceArea(f);
+    }
+    return res / 3;
 }
 
 /*
