@@ -43,7 +43,16 @@ namespace surface {
 SparseMatrix<double> VertexPositionGeometry::buildHodgeStar0Form() const {
 
     // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> tripletList;
+    for (Vertex v: mesh.vertices()) {
+        size_t index = v.getIndex();
+        tripletList.push_back(Eigen::Triplet<double>(index, index, barycentricDualArea(v)));
+    }
+
+    SparseMatrix<double> hstar_0(mesh.nVertices(), mesh.nVertices());
+    hstar_0.setFromTriplets(tripletList.begin(), tripletList.end());
+    hstar_0.makeCompressed();
+    return hstar_0;
 }
 
 /*
