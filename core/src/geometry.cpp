@@ -81,7 +81,14 @@ double VertexPositionGeometry::totalArea() const {
 double VertexPositionGeometry::cotan(Halfedge he) const {
 
     // TODO
-    return 0; // placeholder
+    // assuming triangle mesh
+    Halfedge next_he = he.next();
+    Vector3 v_a = inputVertexPositions[he.tipVertex()] - inputVertexPositions[next_he.tipVertex()],
+            v_b = inputVertexPositions[he.tailVertex()] - inputVertexPositions[next_he.tipVertex()];
+    
+    Vector3 cross_product = cross(v_a, v_b);
+
+    return dot(v_a, v_b) / cross_product.norm(); 
 }
 
 /*
@@ -93,6 +100,7 @@ double VertexPositionGeometry::cotan(Halfedge he) const {
 double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
 
     // TODO
+    
     return 0; // placeholder
 }
 
