@@ -141,8 +141,7 @@ double VertexPositionGeometry::dihedralAngle(Halfedge he) const {
 
     // TODO
     Vertex v_i = he.tailVertex(), v_j = he.tipVertex(), v_k = he.next().tipVertex(), v_l = he.twin().next().tipVertex();
-    // std::cout << v_i.getIndex() << ' ' << v_j.getIndex() << ' ' << v_k.getIndex() << ' ' << he.next().next().tipVertex().getIndex() << '\n';
-    // std::cout << he.twin().tailVertex().getIndex() << ' ' << he.twin().tipVertex().getIndex() << ' ' << v_l.getIndex() << ' ' << he.twin().twin().tipVertex().getIndex() << '\n';
+    
     Vector3 e_ij = inputVertexPositions[v_j] - inputVertexPositions[v_i],
             e_ik = inputVertexPositions[v_k] - inputVertexPositions[v_i],
             e_il = inputVertexPositions[v_l] - inputVertexPositions[v_i];
