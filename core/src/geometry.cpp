@@ -117,7 +117,18 @@ double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
 double VertexPositionGeometry::angle(Corner c) const {
 
     // TODO
-    return 0; // placeholder
+    Vertex vertex_c = c.vertex(), vertex_a = c.halfedge().tipVertex(), vertex_b = c.halfedge().next().tipVertex();
+    Vector3 v_a = inputVertexPositions[vertex_a] - inputVertexPositions[vertex_c],
+            v_b = inputVertexPositions[vertex_b] - inputVertexPositions[vertex_c];
+   
+    double cos_value = (dot(v_a, v_b)) / (norm(v_a) * norm(v_b));
+    if (cos_value > 1.0) {
+        cos_value = 1.0;
+    } else if (cos_value < -1.0) {
+        cos_value = -1.0;
+    }
+
+    return acos(cos_value);
 }
 
 /*
