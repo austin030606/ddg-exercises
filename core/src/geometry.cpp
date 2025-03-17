@@ -140,7 +140,17 @@ double VertexPositionGeometry::angle(Corner c) const {
 double VertexPositionGeometry::dihedralAngle(Halfedge he) const {
 
     // TODO
-    return 0; // placeholder
+    Vertex v_i = he.tailVertex(), v_j = he.tipVertex(), v_k = he.next().tipVertex(), v_l = he.twin().next().tipVertex();
+    // std::cout << v_i.getIndex() << ' ' << v_j.getIndex() << ' ' << v_k.getIndex() << ' ' << he.next().next().tipVertex().getIndex() << '\n';
+    // std::cout << he.twin().tailVertex().getIndex() << ' ' << he.twin().tipVertex().getIndex() << ' ' << v_l.getIndex() << ' ' << he.twin().twin().tipVertex().getIndex() << '\n';
+    Vector3 e_ij = inputVertexPositions[v_j] - inputVertexPositions[v_i],
+            e_ik = inputVertexPositions[v_k] - inputVertexPositions[v_i],
+            e_il = inputVertexPositions[v_l] - inputVertexPositions[v_i];
+
+    Vector3 v_ijk = cross(e_ij, e_ik), v_jil = cross(e_il, e_ij);
+    Vector3 N_ijk = v_ijk / norm(v_ijk), N_jil = v_jil / norm(v_jil);
+
+    return atan2(dot(e_ij / norm(e_ij), cross(N_ijk, N_jil)), dot(N_ijk, N_jil)); // placeholder
 }
 
 /*
