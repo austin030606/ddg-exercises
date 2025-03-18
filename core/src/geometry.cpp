@@ -339,7 +339,16 @@ double VertexPositionGeometry::scalarMeanCurvature(Vertex v) const {
 double VertexPositionGeometry::circumcentricDualArea(Vertex v) const {
 
     // TODO
-    return 0; // placeholder
+    double dual_area = 0.0;
+    for (Halfedge he: v.outgoingHalfedges()) {
+        Vertex v_i = he.tailVertex(), v_j = he.tipVertex(), v_k = he.next().tipVertex();
+        Vector3 e_ij = inputVertexPositions[v_j] - inputVertexPositions[v_i],
+                e_ik = inputVertexPositions[v_k] - inputVertexPositions[v_i];
+        
+        dual_area += pow(norm(e_ik), 2) * cotan(he.next().next()) + pow(norm(e_ij), 2) * cotan(he);
+    }
+    dual_area *= 0.125;
+    return dual_area;
 }
 
 /*
