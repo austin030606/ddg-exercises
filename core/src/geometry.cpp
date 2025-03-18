@@ -319,7 +319,15 @@ double VertexPositionGeometry::totalAngleDefect() const {
 double VertexPositionGeometry::scalarMeanCurvature(Vertex v) const {
 
     // TODO
-    return 0; // placeholder
+    double mean_curavture = 0.0;
+    for (Halfedge he: v.outgoingHalfedges()) {
+        Vertex v_i = he.tailVertex(), v_j = he.tipVertex();
+        Vector3 e_ij = inputVertexPositions[v_j] - inputVertexPositions[v_i];
+        
+        mean_curavture += dihedralAngle(he) * norm(e_ij);
+    }
+    mean_curavture *= 0.5;
+    return mean_curavture; // placeholder
 }
 
 /*
