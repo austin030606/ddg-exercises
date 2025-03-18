@@ -226,7 +226,18 @@ Vector3 VertexPositionGeometry::vertexNormalSphereInscribed(Vertex v) const {
 Vector3 VertexPositionGeometry::vertexNormalAreaWeighted(Vertex v) const {
 
     // TODO
-    return {0, 0, 0}; // placeholder
+    Vector3 N = Vector3{0., 0., 0.};
+    for (Corner c: v.adjacentCorners()) {
+        Vertex v_i = c.vertex(), v_j = c.halfedge().tipVertex(), v_k = c.halfedge().next().tipVertex();
+        Vector3 e_ij = inputVertexPositions[v_j] - inputVertexPositions[v_i],
+                e_ik = inputVertexPositions[v_k] - inputVertexPositions[v_i];
+        
+        Vector3 cross_product = cross(e_ij, e_ik);
+        Vector3 normal = cross_product / norm(cross_product);
+        double face_area = 0.5 * norm(cross_product);
+        N += face_area * normal;
+    }
+    return N / norm(N);
 }
 
 /*
