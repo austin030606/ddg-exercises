@@ -360,7 +360,11 @@ double VertexPositionGeometry::circumcentricDualArea(Vertex v) const {
 std::pair<double, double> VertexPositionGeometry::principalCurvatures(Vertex v) const {
 
     // TODO
-    return std::make_pair(0, 0); // placeholder
+    double circumcentric_dual_area = circumcentricDualArea(v);
+    double K = angleDefect(v) / circumcentric_dual_area, H = scalarMeanCurvature(v) / circumcentric_dual_area;
+
+    double diff = sqrt(H * H - K);
+    return std::make_pair(H + diff, H - diff);
 }
 
 
