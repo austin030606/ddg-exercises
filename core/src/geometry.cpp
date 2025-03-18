@@ -268,7 +268,14 @@ Vector3 VertexPositionGeometry::vertexNormalGaussianCurvature(Vertex v) const {
 Vector3 VertexPositionGeometry::vertexNormalMeanCurvature(Vertex v) const {
 
     // TODO
-    return {0, 0, 0}; // placeholder
+    Vector3 N = Vector3{0., 0., 0.};
+    for (Halfedge he: v.outgoingHalfedges()) {
+        Vertex v_i = he.tailVertex(), v_j = he.tipVertex();
+        Vector3 e_ij = inputVertexPositions[v_j] - inputVertexPositions[v_i];
+        
+        N += (cotan(he) + cotan(he.twin())) * e_ij;
+    }
+    return N / norm(N);
 }
 
 /*
